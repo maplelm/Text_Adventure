@@ -8,7 +8,6 @@
 
 #include "Entity.h"
 #include "View.h"
-#include "Item.h"
 
 //typedef std::vector<std::vector<std::stack<Entity>>> Layer;
 
