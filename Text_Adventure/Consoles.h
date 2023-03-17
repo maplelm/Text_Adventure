@@ -10,16 +10,18 @@
 
 #endif
 
-#include "ctime"
-#include "cstdlib"
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
+#include <string>
 
 
 namespace Consoles {
 
-	void Init();
+	bool Init();
 	char Update();
 	void ResizeWindow(unsigned int width, unsigned int height);
-	void DrawToScreen(unsigned int x, unsigned int y, char texture);
+	void DrawToScreen(unsigned int x, unsigned int y, std::string texture);
     void Close();
 
 }

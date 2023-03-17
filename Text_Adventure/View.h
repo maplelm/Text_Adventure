@@ -3,6 +3,7 @@
 
 #include "Defines.h"
 #include "Entity.h"
+#include "Consoles.h"
 #include <vector>
 #include <stack>
 #include <fstream>
@@ -19,6 +20,9 @@ class View {
     int x_position;
     int y_position;
     int z_position;
+
+    unsigned int xWinPos;
+    unsigned int yWinPos;
 
     float zoom = 1.f;
      
@@ -39,9 +43,12 @@ public:
     const int GetxPosition();
     const int GetyPosition();
     const int GetzPosition();
+    const unsigned int GetxWindowPos();
+    const unsigned int GetyWindowPos();
     const float GetZoom();
 
     void Move(int x, int y, int z = 0);
+    void MoveWindow(int x, int y); 
 
 };
 

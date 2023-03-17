@@ -4,6 +4,9 @@ View::View() {
     x_position = 0;
     y_position = 0;
     z_position = 1;
+
+    xWinPos = 0;
+    yWinPos = 0;
 }
 
 View::~View() {
@@ -43,9 +46,11 @@ void View::Render(Map * map) {
             }
         }
         renderRow += "\x1b[0m\n";
+        Consoles::DrawToScreen(xWinPos, yWinPos + y, renderRow);
+        renderRow = "";
     }
     //std::cout << "\x1b[?1049l";
-    std::cout << renderRow;
+    //std::cout << renderRow;
     //std::cout << "\x1b[?1049h";
 
 }
@@ -80,6 +85,14 @@ const int View::GetzPosition() {
     return z_position;
 }
 
+const unsigned int View::GetxWindowPos() {
+    return xWinPos;
+}
+
+const unsigned int View::GetyWindowPos() {
+    return yWinPos;
+}
+
 const float View::GetZoom() {
     return zoom;
 }
@@ -88,4 +101,12 @@ void View::Move(int x, int y, int z) {
     SetxPosition(x_position + x);
     SetyPosition(y_position + y);
     SetzPosition(z_position + z);
+}
+
+void View::MoveWindow(int x, int y) {
+
+    if (xWinPos + x >= 0) 
+        xWinPos += x;
+    if (yWinPos + y >= 0)
+        yWinPos += y;
 }

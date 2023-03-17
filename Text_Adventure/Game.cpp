@@ -52,7 +52,7 @@ void Game::Run() {
     std::cout << "Welcome to my adventure Game!" << std::endl;
 
     // Creating init states
-    m_stateStack.push(new TestState(500,500,10, 0));
+    m_stateStack.push(new TestState(200,200,4, 0));
 
     while (!m_stateStack.empty()) {
 

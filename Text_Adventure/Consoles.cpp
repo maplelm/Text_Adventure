@@ -1,17 +1,22 @@
 #include "Consoles.h"
 
-void Consoles::Init() {
+bool Consoles::Init() {
 
 #ifdef _WIN32
 
 #else
-
     initscr();
+    if (has_colors() == false) {
+        std::cout << "Your terminal does not support color\n";
+        return false;
+    }
     cbreak();
     noecho();
     keypad(stdscr, true);
 
 #endif
+
+    return true;
 
 }
 
@@ -29,7 +34,15 @@ void Consoles::ResizeWindow(unsigned int width, unsigned int height) {
 
 }
 
-void Consoles::DrawToScreen(unsigned int x, unsigned int y, char texture) {
+void Consoles::DrawToScreen(unsigned int x, unsigned int y, std::string texture) {
+
+//#ifdef _WIN32
+    std::cout << "\x1b[" << y << ";" << x << "f" << texture;
+//#else
+//    move(y,x); 
+//   refresh();
+//    std::cout << texture;
+//#endif
 
 }
 

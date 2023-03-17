@@ -59,14 +59,22 @@ void TestState::Update() {
 
 	if (input == 'c')
 		m_isRunning = false;
-	if (input == 'w')
+	if (input == 'w') {
 		m_camera.Move(0, -1);
-	if (input == 's')
+        m_camera.MoveWindow(0,-1);
+    }
+	if (input == 's') {
 		m_camera.Move(0, 1);
-	if (input == 'a')
+        m_camera.MoveWindow(0,1);
+    }
+	if (input == 'a') {
 		m_camera.Move(-1, 0);
-	if (input == 'd')
+        m_camera.MoveWindow(-1,0);
+    }
+	if (input == 'd') {
 		m_camera.Move(1, 0);
+        m_camera.MoveWindow(1,0);
+    }
 	if (input == 'q')
 		m_camera.Move(0, 0, 1);
 	if (input == 'e')
@@ -74,7 +82,7 @@ void TestState::Update() {
 	if (input == '[')
 		m_camera.SetZoom(m_camera.GetZoom() - 0.1f);
 	if (input == ']')
-		m_camera.SetZoom(m_camera.GetZoom() + 0.1f);
+	    m_camera.SetZoom(m_camera.GetZoom() + 0.1f);
 }
 
 void TestState::UserInput() {

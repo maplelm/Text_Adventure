@@ -16,11 +16,11 @@
 class State {
 protected:
 
-    Map m_map;
-
-    View m_camera;
-
+    Map m_map; 
+    View m_camera; 
     bool m_isRunning;
+    unsigned int xPos;
+    unsigned int yPos;
 
     //Creates the map structure to specified dimentions (stacks are empty)
     void InitMap(int width, int height, int depth);
@@ -43,6 +43,7 @@ public:
     void AddEntityToTile(unsigned int x, unsigned int y, unsigned int z, Entity entity);
 
     const bool IsOpen();
+
 };
 
 #endif
