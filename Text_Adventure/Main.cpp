@@ -1,16 +1,20 @@
 
 #include <iostream>
-#include "Game.h"
+
+#include "Consoles.h"
 
 //adding windows.h library when compiling on a windows system
-#ifdef WIN
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
+#include "Game.h"
+
 int main(int argc, char** argv) {
 
+    /* TEMP CODE*****************************
 // If on windows enable ansi codes for the command prompt
-#ifdef WIN
+#ifdef _WIN32
     // Get the console output handle
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -20,6 +24,9 @@ int main(int argc, char** argv) {
     dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
     SetConsoleMode(hOut, dwMode);
 #endif
+******************************************************/
+
+    Consoles::Init();
 
     std::cout << "\x1b[?25l";
 
@@ -27,6 +34,8 @@ int main(int argc, char** argv) {
     app.Run();
      
     std::cout << "\x1b[0m\x1b[H\x1b[J\x1b[?25h";
+
+    Consoles::Close(); 
 
     return 0;
 

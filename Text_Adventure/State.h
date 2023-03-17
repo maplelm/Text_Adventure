@@ -1,15 +1,17 @@
 #ifndef STATE_H
 #define STATE_H
 
+#ifdef _WIN32
 #include <conio.h>
+#endif
+
 #include <vector>
 #include <stack>
 #include <cstdlib>
+#include <ctime>
 
 #include "Entity.h"
-#include "View.h"
-
-//typedef std::vector<std::vector<std::stack<Entity>>> Layer;
+#include "View.h" 
 
 class State {
 protected:

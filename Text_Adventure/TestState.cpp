@@ -7,10 +7,10 @@ TestState::TestState(unsigned int height, unsigned int width, unsigned int depth
 	float treeGrassRatio = .55f;
 
 	//Init random number generator
-	if (seed == 0)
-		std::srand((unsigned)std::time(NULL));
-	else
-		std::srand(seed);
+    if (seed > 0)
+        std::srand(seed);
+    else
+        std::srand((unsigned) std::time(NULL));
 
 	//Init Terrain entities
 	AIR_ENTITY;
@@ -29,13 +29,13 @@ TestState::TestState(unsigned int height, unsigned int width, unsigned int depth
 					m_map[z][y][x].push(air);
 				}
 				else if (z == gl) {
-					if ((float)std::rand() / RAND_MAX > treeGrassRatio)
+					if ((float)std::rand() / (float)RAND_MAX > treeGrassRatio)
 						m_map[z][y][x].push(grass);
 					else
 						m_map[z][y][x].push(tree);
 				}
 				else {
-					if ((float)std::rand() / RAND_MAX > 0.5f)
+					if ((float)std::rand() / (float)RAND_MAX > 0.5f)
 						m_map[z][y][x].push(dirt);
 					else
 						m_map[z][y][x].push(silt);
@@ -55,7 +55,7 @@ TestState::~TestState() {
 
 void TestState::Update() {
 
-	char input = _getch();
+    char input = Consoles::Update();
 
 	if (input == 'c')
 		m_isRunning = false;

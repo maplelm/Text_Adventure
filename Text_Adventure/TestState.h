@@ -2,6 +2,7 @@
 #define TESTSTATE_H
 
 #include "State.h"
+#include "Consoles.h"
 
 class TestState : public State {
 

@@ -2,20 +2,45 @@
 
 void Consoles::Init() {
 
+#ifdef _WIN32
+
+#else
+
+    initscr();
+    cbreak();
+    noecho();
+    keypad(stdscr, true);
+
+#endif
+
 }
 
-char Consoles::Update() {
+char Consoles::Update() { 
 
-	char input = ' ';
-
-
+#ifdef _WIN32
+    char input = _getch();
+#else
+    char input = getch();
+#endif
 	return input;
 }
 
-void ResizeWindow(unsigned int width, unsigned int height) {
+void Consoles::ResizeWindow(unsigned int width, unsigned int height) {
 
 }
 
-void DrawToScreen(unsigned int x, unsigned int y, char texture) {
+void Consoles::DrawToScreen(unsigned int x, unsigned int y, char texture) {
 
 }
+
+void Consoles::Close() {
+
+#ifdef _WIN32
+
+#else
+
+    endwin();
+
+#endif
+}
+

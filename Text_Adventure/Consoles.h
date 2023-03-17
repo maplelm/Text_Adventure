@@ -10,6 +10,9 @@
 
 #endif
 
+#include "ctime"
+#include "cstdlib"
+
 
 namespace Consoles {
 
@@ -17,6 +20,7 @@ namespace Consoles {
 	char Update();
 	void ResizeWindow(unsigned int width, unsigned int height);
 	void DrawToScreen(unsigned int x, unsigned int y, char texture);
+    void Close();
 
 }
 
