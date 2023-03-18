@@ -4,7 +4,19 @@
 #include <iostream>
 #include <string>
 
-typedef struct {
+struct Status{
+    Status(float health = 1, float mana = 0, float stamina = 0, float strength = 0, float dexterity = 0) {
+
+        this->health  = health;
+        this->maxHealth = health;
+        this->mana = mana;
+        this->maxMana = mana;
+        this->stamina = stamina;
+        this->maxStamina = stamina;
+        this->strength = strength;
+        this->dexterity = dexterity;
+
+    }
     float health;
     float maxHealth;
     float mana;
@@ -13,7 +25,8 @@ typedef struct {
     float dexterity;
     float stamina;
     float maxStamina;
-}Status;
+};
+typedef struct Status Status;
 
 typedef enum {
     white,
