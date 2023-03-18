@@ -47,6 +47,10 @@ void Game::UserInput() {
 
 }
 
+
+////////////////////
+// Main Game Loop //
+////////////////////
 void Game::Run() {
 
     std::cout << "Welcome to my adventure Game!" << std::endl;

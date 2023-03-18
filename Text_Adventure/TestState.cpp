@@ -91,6 +91,7 @@ void TestState::Update() {
 		m_camera.SetZoom(m_camera.GetZoom() - 0.1f);
 	if (input == ']')
 	    m_camera.SetZoom(m_camera.GetZoom() + 0.1f);
+
 }
 
 void TestState::UserInput() {
