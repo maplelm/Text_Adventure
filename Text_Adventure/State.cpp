@@ -1,7 +1,9 @@
 #include "State.h" 
 
 
-void State::InitMap(int width, int height, int depth) {
+void State::InitMap(int width, int height, int depth, int groundLevel) {
+
+    m_groundLevel = groundLevel;
 
     //Init Temp map elements to fill map vectors with
     YAxis yLayer;
@@ -53,18 +55,18 @@ void State::CellAuto2d(Entity target, Entity blank, unsigned int layer, unsigned
                             xtarget < 0 || xtarget >= m_map[layer][y].size())
                             continue;
 
-                        if (m_map[layer][ytarget][xtarget].top().GetTexture() == targetTexture)
+                        if (m_map[layer][ytarget][xtarget].back().GetTexture() == targetTexture)
                             neighbors++;
                     }
                 }
 
                 if (neighbors <= 1 || neighbors > 4) {
-                    copyLayer[y][x].pop();
-                    copyLayer[y][x].push(blank);
+                    copyLayer[y][x].pop_back();
+                    copyLayer[y][x].push_back(blank);
                 }
                 else {
-                    copyLayer[y][x].pop();
-                    copyLayer[y][x].push(target);
+                    copyLayer[y][x].pop_back();
+                    copyLayer[y][x].push_back(target);
                 }
 
             }
@@ -113,11 +115,11 @@ State::State(unsigned int height, unsigned int width, unsigned int depth, unsign
             for (unsigned int x = 0; x < width; x++) {
                 m_map[z][y].push_back(iListLayer);
                 if (z < 9)
-                    m_map[z][y][x].push(air);
+                    m_map[z][y][x].push_back(air);
                 if (z == 9)
-                    m_map[z][y][x].push(grass);
+                    m_map[z][y][x].push_back(grass);
                 if (z > 9)
-                    m_map[z][y][x].push(dirt);
+                    m_map[z][y][x].push_back(dirt);
             }
         }
     }
@@ -148,7 +150,7 @@ void State::Render(bool fullMap) {
 void State::AddEntityToTile(unsigned int x, unsigned int y, unsigned int z, Entity entity) {
     if (z >= 0 && y >= 0 && x >= 0 &&
         z < m_map.size() && y < m_map[z].size() && x < m_map[z][y].size()) {
-        m_map[z][y][x].push(entity);
+        m_map[z][y][x].push_back(entity);
     }
 }
 

@@ -4,7 +4,7 @@
 #include "State.h"
 #include "Consoles.h"
 
-#include "TestEntity.h"
+#include "Player.h"
 
 class TestState : public State {
 

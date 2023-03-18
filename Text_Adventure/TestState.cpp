@@ -3,7 +3,6 @@
 TestState::TestState(unsigned int height, unsigned int width, unsigned int depth, unsigned int seed) {
 
 	//Local Variable declearation
-	unsigned int gl = 1; // ground level
 	float treeGrassRatio = .55f;
 
 	//Init random number generator
@@ -19,34 +18,59 @@ TestState::TestState(unsigned int height, unsigned int width, unsigned int depth
 	Entity silt('#', nullptr, Colors::silver, Colors::brown, false, true);
 	Entity tree('T', nullptr, Colors::green, Colors::brown, false, true);
 
-	//Filling each tile space with a base entity
+    // GENERATING THE MAP //
 	InitMap(width, height, depth);
 
 	for (unsigned int z = 0; z < m_map.size(); z++) {
 		for (unsigned int y = 0; y < m_map[z].size(); y++) {
 			for (unsigned int x = 0; x < m_map[z][y].size(); x++) {
-				if (z < gl) {
-					m_map[z][y][x].push(air);
+				if (z < m_groundLevel) {
+					m_map[z][y][x].push_back(air);
 				}
-				else if (z == gl) {
+				else if (z == m_groundLevel) {
 					if ((float)std::rand() / (float)RAND_MAX > treeGrassRatio)
-						m_map[z][y][x].push(grass);
+						m_map[z][y][x].push_back(grass);
 					else
-						m_map[z][y][x].push(tree);
+						m_map[z][y][x].push_back(tree);
 				}
 				else {
 					if ((float)std::rand() / (float)RAND_MAX > 0.5f)
-						m_map[z][y][x].push(dirt);
+						m_map[z][y][x].push_back(dirt);
 					else
-						m_map[z][y][x].push(silt);
+						m_map[z][y][x].push_back(silt);
 				}
 			}
 		}
 	}
-
+    
 	//Using Celluar Automata on trees
-	CellAuto2d(tree, grass, gl, 2);
+	CellAuto2d(tree, grass, m_groundLevel, 2);
 
+
+    bool playerPlaced = false;
+    while (!playerPlaced) {
+        float ySelect = (float) std::rand() / (float) RAND_MAX;
+        int yPlayerStart = std::floor((m_map[m_groundLevel].size() - 1) * ySelect);
+        float xSelect = (float) std::rand() / (float) RAND_MAX;
+        int xPlayerStart = std::floor((m_map[m_groundLevel][yPlayerStart].size() - 1) * xSelect);
+        
+        bool canPass = true;
+        for (auto eachEntity : m_map[m_groundLevel][yPlayerStart][xPlayerStart]) {
+            if (!eachEntity.GetisPassable()) {
+                canPass = false; 
+                break;
+            }
+        }
+        if (!canPass)
+            continue;
+        Player newPlayer(&m_map[m_groundLevel], '@', Colors::white, Colors::black);
+        m_map[m_groundLevel][yPlayerStart][xPlayerStart].push_back(newPlayer);
+        m_camera.SetyPosition(yPlayerStart - 10);
+        m_camera.SetxPosition(xPlayerStart - 10);
+
+        playerPlaced = true;
+
+    }
 }
 
 TestState::~TestState() {

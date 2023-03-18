@@ -9,7 +9,7 @@ Player::Player() {
     m_currentLayer = nullptr;
 
 }
-Player::Player(std::vector<std::vector<std::stack<Entity>>>* currentLayer, char texture, Colors fg, Colors bg, bool isPassable, bool isVisable,float health, float mana,
+Player::Player(std::vector<std::vector<std::vector<Entity>>>* currentLayer, char texture, Colors fg, Colors bg, bool isPassable, bool isVisable,float health, float mana,
         float strength, float dexterity, float stamina) {
 
     this->sprite.texture = texture;
@@ -26,7 +26,7 @@ Player::Player(std::vector<std::vector<std::stack<Entity>>>* currentLayer, char 
 }
 
 
-Player::Player(std::vector<std::vector<std::stack<Entity>>> * currentLayer, char texture, Status * stats, Colors fg, Colors bg, bool isPassable, bool isVisable) {
+Player::Player(std::vector<std::vector<std::vector<Entity>>> * currentLayer, char texture, Status * stats, Colors fg, Colors bg, bool isPassable, bool isVisable) {
 
     this->sprite.texture = texture;
     this->sprite.fg = fg;
@@ -56,7 +56,7 @@ void Player::SetMaxInventorySize(unsigned int invSize) {
     this->m_MaxInventorySize = invSize;
 }
 
-void Player::SetCurrentLayer(std::vector<std::vector<std::stack<Entity>>> * layer) {
+void Player::SetCurrentLayer(std::vector<std::vector<std::vector<Entity>>> * layer) {
     this->m_currentLayer = layer;
 }
 
@@ -73,7 +73,7 @@ unsigned int Player::GetInventorySize() {
     return this->m_MaxInventorySize;
 }
 
-std::vector<std::vector<std::stack<Entity>>> * Player::GetCurrentLayer() {
+std::vector<std::vector<std::vector<Entity>>> * Player::GetCurrentLayer() {
     return this->m_currentLayer;
 }
 

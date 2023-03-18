@@ -5,8 +5,8 @@ View::View() {
     y_position = 0;
     z_position = 1;
 
-    xWinPos = 0;
-    yWinPos = 0;
+    xWinPos = 1;
+    yWinPos = 1;
 }
 
 View::~View() {
@@ -38,11 +38,11 @@ void View::Render(Map * map) {
             }
             else {
                 // adding foreground color to entity
-                renderRow += map->at(z_position).at(targetypos).at(targetxpos).top().GetFg();
+                renderRow += map->at(z_position).at(targetypos).at(targetxpos).back().GetFg();
                 // adding background color to entity
-                renderRow += map->at(z_position).at(targetypos).at(x + x_position).top().GetBg();
+                renderRow += map->at(z_position).at(targetypos).at(x + x_position).back().GetBg();
                 // Adding entity model to renderRow
-                renderRow += map->at(z_position).at(targetypos).at(x + x_position).top().GetTexture();
+                renderRow += map->at(z_position).at(targetypos).at(x + x_position).back().GetTexture();
             }
         }
         renderRow += "\x1b[0m\n";

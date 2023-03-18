@@ -9,11 +9,11 @@
 #include <fstream>
 
 
-typedef std::vector<std::vector<std::vector<std::stack<Entity>>>> Map;
+typedef std::vector<std::vector<std::vector<std::vector<Entity>>>> Map;
 
-typedef std::vector<std::vector<std::stack<Entity>>> YAxis;
-typedef std::vector<std::stack<Entity>> XAxis;
-typedef std::stack<Entity> ItemList;
+typedef std::vector<std::vector<std::vector<Entity>>> YAxis;
+typedef std::vector<std::vector<Entity>> XAxis;
+typedef std::vector<Entity> ItemList;
 
 class View {
 
