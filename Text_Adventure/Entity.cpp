@@ -59,52 +59,28 @@ Entity::Entity(char texture, Colors fg, Colors bg, bool isPassable, bool isVisab
     this->sprite.bg = bg;
     this->isPassable = isPassable;
     this->isVisable = isVisable;
-    this->stats->health = health;
-    this->stats->mana = mana;
-    this->stats->strength = strength;
-    this->stats->dexterity = dexterity;
-    this->stats->stamina = stamina;
+    if (health < 1 || mana < 1 || stamina < 1 || strength < 0 || dexterity < 0)
+        this->stats = nullptr;
+    else {
+        this->stats = new Status;
+        this->stats->health = health;
+        this->stats->maxHealth = health;
+        this->stats->mana = mana;
+        this->stats->maxMana = mana;
+        this->stats->strength = strength;
+        this->stats->dexterity = dexterity;
+        this->stats->stamina = stamina;
+        this->stats->maxStamina = stamina;
+    }
 }
 
-Entity::Entity(char texture, bool isPassable, bool isVisable, float health, float mana, float strength, float dexterity, float stamina) {
-    this->sprite.texture = texture;
-    this->sprite.fg = Colors::none;
-    this->sprite.bg = Colors::none;
-    this->isPassable = isPassable;
-    this->isVisable = isVisable;
-    this->stats = new Status;
-    this->stats->health = health;
-    this->stats->mana = mana;
-    this->stats->strength = strength;
-    this->stats->dexterity = dexterity;
-    this->stats->stamina = stamina;
-}
-
-Entity::Entity(char texture, Colors fg, Colors bg, bool isPassable, bool isVisable, Status* stats) {
+Entity::Entity(char texture, Status * stats, Colors fg, Colors bg, bool isPassable, bool isVisable) {
     this->sprite.texture = texture;
     this->sprite.fg = fg;
     this-> sprite.bg = bg;
     this->isPassable = isPassable;
     this->isVisable = isVisable;
     this->stats = stats;
-}
-
-Entity::Entity(char texture, bool isPassable, bool isVisable, Status* stats) {
-    this->sprite.texture = texture;
-    this->sprite.fg = Colors::none;
-    this->sprite.bg = Colors::none;
-    this->isPassable = isPassable;
-    this->isVisable = isVisable;
-    this->stats = stats;
-}
-
-Entity::Entity(char texture) {
-    this->sprite.texture = texture;
-    this->sprite.fg = Colors::none;
-    this->sprite.bg = Colors::none;
-    isPassable = false;
-    isVisable = true;
-    stats = nullptr;
 }
 
 
@@ -122,6 +98,10 @@ void Entity::SetSprite(Sprite sprite) {
 
 void Entity::SetisPassable(bool isPassable) {
     this->isPassable = isPassable;
+}
+
+void Entity::SetisVisable(bool isVisable) {
+    this->isVisable = isVisable;
 }
 
 void Entity::SetHealth(float health) {
@@ -176,53 +156,45 @@ void Entity::SetBackground(Colors color) {
     sprite.bg = color;
 }
 
+void Entity::SetMaxHealth(float health) {
+    if (stats == nullptr)
+        return ;
+    if (health < 1)
+        stats->maxHealth = 1;
+    else
+        stats->maxHealth = health;
+}
+
+void Entity::SetMaxMana(float mana) {
+    if (stats == nullptr)
+        return ;
+    if (mana < 0)
+        stats->maxMana = 0;
+    else
+        stats->maxMana = mana;
+}
+
+void Entity::setMaxStamina(float stamina) {
+    if (stats == nullptr)
+        return ;
+    if (stamina < 0)
+        stats->stamina = 0;
+    else
+        stats->stamina = stamina;
+}
+
+
 //Getter fucntions
 const Sprite Entity::GetSprite() {
     return this->sprite;
 }
 
-const bool Entity::GetIsPassable() {
+const bool Entity::GetisPassable() {
     return this->isPassable;
 }
 
-const float Entity::GetHealth() {
-    if (stats == nullptr) {
-        std::cout << "stats where not initialized!" << std::endl;
-        return -1;
-    }
-    return stats->health;
-}
-
-const float Entity::GetMana() {
-    if (stats == nullptr) {
-        std::cout << "stats where not initialized!" << std::endl;
-        return -1;
-    }
-    return stats->mana;
-}
-
-const float Entity::GetStrength() {
-    if (stats == nullptr) {
-        std::cout << "stats where not initialized!" << std::endl;
-        return -1;
-    }
-    return stats->strength;
-}
-
-const float Entity::GetDexterity() {
-    if (stats == nullptr) {
-        std::cout << "stats where not initialized!" << std::endl;
-        return -1;
-    }
-    return stats->dexterity;
-}
-
-const float Entity::GetStamina() {
-    if (stats == nullptr) {
-        std::cout << "stats where not initialized!" << std::endl;
-        return -1;
-    }
-    return stats->stamina;
+const bool Entity::GetisVisable() {
+    return this->isVisable;
 }
 
 const Status* Entity::GetStats() {
@@ -244,12 +216,6 @@ const char Entity::GetTexture() {
 }
 
 
-
-
-
-
-
-
 void Entity::TogglePassable() {
     if (isPassable)
         isPassable = false;
@@ -262,5 +228,78 @@ void Entity::ToggleVisable() {
         isVisable = false;
     else
         isVisable = true;
+}
+
+
+void Entity::ChangeHealth(float health) {
+    if (stats == nullptr)
+        return;
+    if (stats->health + health < 0)
+        stats->health = 0;
+    else
+        stats->health += health;
+}
+
+void Entity::ChangeMana(float mana) {
+    if (stats == nullptr)
+        return;
+    if (stats->mana + mana < 0)
+        stats->mana = 0;
+    else
+        stats->mana += mana;
+}
+
+void Entity::ChangeStrength(float strength) {
+    if (stats == nullptr)
+        return;
+    if (stats->strength + strength < 0)
+        stats->strength = 0;
+    else
+        stats->strength += strength;
+}
+
+void Entity::ChangeDexterity(float dexterity) {
+    if (stats == nullptr)
+        return;
+    if (stats->dexterity + dexterity < 0)
+        stats->dexterity = 0;
+    else
+        stats->dexterity += dexterity;
+}
+
+void Entity::ChangeStamina(float stamina) {
+    if (stats == nullptr)
+        return;
+    if (stats->stamina + stamina < 0)
+        stats->stamina = 0;
+    else
+        stats->stamina += stamina;
+}
+
+void Entity::ChangeMaxHealth(float health) {
+    if (stats == nullptr)
+        return;
+    if (stats->maxHealth + health < 1)
+        stats->maxHealth = 1;
+    else
+        stats->maxHealth += health;
+}
+
+void Entity::ChangeMaxMana(float mana) {
+    if (stats == nullptr)
+        return;
+    if (stats->maxMana + mana < 0)
+        stats->maxMana = 0;
+    else
+        stats->maxMana += mana;
+}
+
+void Entity::ChangeMaxStamina(float stamina) {
+    if (stats == nullptr)
+        return;
+    if (stats->maxStamina + stamina < 0)
+        stats->maxStamina = 0;
+    else
+        stats->maxStamina += stamina;
 }
 

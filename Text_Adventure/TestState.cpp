@@ -16,8 +16,8 @@ TestState::TestState(unsigned int height, unsigned int width, unsigned int depth
 	AIR_ENTITY;
 	GRASS_ENTITY;
 	DIRT_ENTITY;
-	Entity silt('#', Colors::silver, Colors::brown, false, true, nullptr);
-	Entity tree('T', Colors::green, Colors::brown, false, true, nullptr);
+	Entity silt('#', nullptr, Colors::silver, Colors::brown, false, true);
+	Entity tree('T', nullptr, Colors::green, Colors::brown, false, true);
 
 	//Filling each tile space with a base entity
 	InitMap(width, height, depth);
@@ -75,6 +75,14 @@ void TestState::Update() {
 		m_camera.Move(1, 0);
         m_camera.MoveWindow(1,0);
     }
+    if (input == 'W')
+        m_camera.Move(0,-1);
+    if (input == 'S')
+        m_camera.Move(0,1);
+    if (input == 'A')
+        m_camera.Move(-1,0);
+    if (input == 'D')
+        m_camera.Move(1,0);
 	if (input == 'q')
 		m_camera.Move(0, 0, 1);
 	if (input == 'e')

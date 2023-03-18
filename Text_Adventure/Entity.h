@@ -6,10 +6,13 @@
 
 typedef struct {
     float health;
+    float maxHealth;
     float mana;
+    float maxMana;
     float strength;
     float dexterity;
     float stamina;
+    float maxStamina;
 }Status;
 
 typedef enum {
@@ -56,16 +59,15 @@ public:
     /************************************/
 
     Entity();
-    Entity(char texture, Colors fg, Colors bg, bool isPassable, bool isVisable, float health, float mana, float strength, float dexterity, float stamina);
-    Entity(char texture, bool isPassable, bool isVisable, float health, float mana, float strength, float dexterity, float stamina);
-    Entity(char texture, Colors fg, Colors bg, bool isPassable, bool isVisable, Status* stats);
-    Entity(char texture, bool isPassable, bool isVisable, Status* stats);
-    Entity(char texture);
+    Entity(char texture, Colors fg = Colors::none, Colors bg = Colors::none, bool isPassable = true, bool isVisable = true,
+             float health = -1, float mana = -1, float strength = -1, float dexterity = -1, float stamina = -1);
+    Entity(char texture, Status * stats, Colors fg = Colors::none, Colors bg = Colors::none, bool isPassable = true, bool isVisable = true);
     virtual ~Entity();
 
     //Setter functions
     void SetSprite(Sprite sprite);
     void SetisPassable(bool isPassable);
+    void SetisVisable(bool isVisable);
     void SetHealth(float health);
     void SetMana(float mana);
     void SetStrength(float strength);
@@ -74,15 +76,14 @@ public:
     void SetStats(Status* stats);
     void SetForeground(Colors color);
     void SetBackground(Colors color);
+    void SetMaxHealth(float health);
+    void SetMaxMana(float mana);
+    void setMaxStamina(float stamina);
 
     //Getter functions
     const Sprite GetSprite();
-    const bool  GetIsPassable();
-    const float GetHealth();
-    const float GetMana();
-    const float GetStrength();
-    const float GetDexterity();
-    const float GetStamina();
+    const bool  GetisPassable();
+    const bool GetisVisable();
     const Status* GetStats();
     const std::string GetFg();
     const std::string GetBg();
@@ -90,6 +91,16 @@ public:
 
     void TogglePassable();
     void ToggleVisable();
+
+    void ChangeHealth(float health);
+    void ChangeMana(float mana);
+    void ChangeStrength(float strength);
+    void ChangeDexterity(float dexterity);
+    void ChangeStamina(float stamina);
+
+    void ChangeMaxHealth(float health);
+    void ChangeMaxMana(float mana);
+    void ChangeMaxStamina(float stamina);
 };
 
 #endif
