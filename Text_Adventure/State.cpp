@@ -25,67 +25,82 @@ void State::InitMap(int width, int height, int depth, int groundLevel) {
 
 void State::CellAuto2d(Entity * target, Entity * blank, unsigned int layer, unsigned int r) {
 
-    struct toEdit {
-        int x;
-        int z;
-        int z;
-        char texture;
-    };
+    // Getting the size of the layer so we don't have to call the functions everytime, its a waste of time
+    unsigned int layerHeight = m_map[layer].size();
+    unsigned int layerWidth = m_map[layer][0].size();
 
-    std::vector<toEdit> editList;
-
+    //Exiting if map is empty
     if (m_map.size() == 0) {
         return; 
     }
+
+    // Used to store new version of layer while it is being created;
     YAxis copyLayer;
-    copyLayer.resize(m_map[layer].size());
-    for (auto y = 0; y < m_map[layer].size(); y++) {
-        copyLayer[y].resize(m_map[layer][y].size());
-        for (auto x = 0; x < m_map[layer][y].size(); x++) {
-            copyLayer[y][x] = m_map[layer][y][x];
+
+    /////////////////////////////////////////////////////////////
+    // Adjusting copyLayer to be the same size as m_map[layer] //
+    /////////////////////////////////////////////////////////////
+    copyLayer.resize(layerHeight);
+    for (int eachRow = 0; eachRow < layerHeight; eachRow++) {
+        //Sizing row to the same length as it is in the original array
+        copyLayer[eachRow].resize(layerWidth);
+        for (int eachCol = 0; eachCol < layerWidth; eachCol++) {
+            copyLayer[eachRow][eachCol].shrink_to_fit();
         }
     }
-    
-    char targetTexture = target->GetTexture();
-    char altTexture = blank->GetTexture();
+    /////////////////////////////////////////////////////////////////////
 
-    for (unsigned int rounds = 0; rounds < r; rounds++) {
 
-        for (int y = 0; y < m_map[layer].size(); y++) {
-            for (int x = 0; x < m_map[layer][y].size(); x++) {
+    // repeats the process for secified number of times 
+    for(int rounds = 0; rounds < r; rounds++) {
 
+        //Process each cell in the layer
+        for(int row = 0; row < layerHeight; row++) {
+            for (int col = 0; col < layerWidth; col++) {
+                
+                // reset the neibhbors value for the next cell
                 int neighbors = 0;
 
-                for (int row = -1; row < 2; row++) {
-                    for (int col = -1; col < 2; col++) {
-                        int xtarget = col + x;
-                        int ytarget = row + y;
-                        if (ytarget < 0 || ytarget >= m_map[layer].size() ||
-                            xtarget < 0 || xtarget >= m_map[layer][y].size())
+                //Check neighbors cells for each cell in the layer
+                for (int localRow = -1; localRow < 2; localRow++ ) {
+                    for (int localCol = -1; localCol < 2; localCol++) {
+                        int checkRow = row + localRow;
+                        int checkCol = col + localCol;
+
+                        // if neighbor does not exist or if neighbor is self skip check
+                        if(checkRow < 0 || checkRow >= m_map[layer].size() ||
+                           checkCol < 0 || checkCol >= layerWidth ||
+                           (localRow == 0 && localCol == 0))
                             continue;
 
-                        if (m_map[layer][ytarget][xtarget].back()->GetTexture() == targetTexture)
+                        if (m_map[layer][checkRow][checkCol].back()->GetTexture() == target->GetTexture())
                             neighbors++;
                     }
                 }
 
-                if (neighbors <= 1 || neighbors > 4) {
-                    copyLayer[y][x].pop_back();
-                    copyLayer[y][x].push_back(blank);
-                }
-                else {
-                    copyLayer[y][x].pop_back();
-                    copyLayer[y][x].push_back(target);
-                }
 
+                // if less then 2 neibhbors or greater then 4 cell dies
+                if (neighbors <= 1 || neighbors > 4)
+                    copyLayer[row][col].push_back( new Entity(*blank));
+                else
+                    copyLayer[row][col].push_back( new Entity(*target));
             }
         }
-        m_map[layer] = copyLayer;
 
+        // replacing all layer state with new layer state
+        m_map[layer].swap(copyLayer);
+
+        // deleting old allocated memory
+        for(int row = 0; row < copyLayer.size(); row++)
+            for (int col = 0; col < copyLayer[row].size(); col++) {
+                delete copyLayer[row][col].back();
+                copyLayer[row][col].pop_back();
+        }
     }
+
 }
 
-void State::CellAuto3d(Entity target, Entity blank, unsigned int CLayer, unsigned int r) {
+void State::CellAuto3d(Entity * target, Entity * blank, unsigned int CLayer, unsigned int r) {
 
 }
 
@@ -113,11 +128,11 @@ State::State(unsigned int height, unsigned int width, unsigned int depth, unsign
     
     
     //checking for valid height,width,depth
-    if (depth == 0)
+    if (depth <= 0)
         depth = 1;
-    if (height == 0)
+    if (height <= 0)
         height = 1;
-    if (width == 0)
+    if (width <= 0)
         width = 1;
 
     for (unsigned int z = 0; z < depth; z++) {
@@ -128,13 +143,13 @@ State::State(unsigned int height, unsigned int width, unsigned int depth, unsign
                 m_map[z][y].push_back(iListLayer);
                 if (z < m_groundLevel)
                     // adding air entities
-                    m_map[z][y][x].push_back(new Entity(' ', nullptr, Colors::blue, Colors::blue, true, true));
+                    m_map[z][y][x].push_back(new AIR_ENTITY);
                 if (z == m_groundLevel)
                     // adding grass
-                    m_map[z][y][x].push_back(new Entity(' ', nullptr, Colors::black, Colors::green, true, true));
+                    m_map[z][y][x].push_back(new GRASS_ENTITY);
                 if (z > m_groundLevel)
                     // adding dirt
-                    m_map[z][y][x].push_back(new Entity('#', nullptr, Colors::brown, Colors::brown, false, true));
+                    m_map[z][y][x].push_back(new DIRT_ENTITY);
             }
         }
     }
@@ -163,19 +178,25 @@ bool State::MovePlayer(int x, int y, int z) {
         return false;
 
     bool passable = true;
-    for (auto each : m_map[playerPos.z + z][playerPos.y + y][playerPos.x  + x])
-        if (!each->GetisPassable())
+    
+    for (auto each : m_map[playerPos.z + z][playerPos.y + y][playerPos.x  + x]) {
+        if (!each->GetisPassable()) {
             passable = false;
+        }
+    }
     if (passable) {
-        for (auto itr = m_map[playerPos.z][playerPos.y][playerPos.x].begin(); itr < m_map[playerPos.z][playerPos.y][playerPos.x].end(); ++itr) {
-            auto id1 = typeid(dynamic_cast<Player*>(*itr)).name();
-            auto id2 = typeid(Player).name();
-            if (typeid(*itr).name() == typeid(Player).name()) {
+        for (auto itr = m_map[playerPos.z][playerPos.y][playerPos.x].begin(); itr <= m_map[playerPos.z][playerPos.y][playerPos.x].end(); ++itr) {
+            Player * playerPtr = dynamic_cast<Player*>(*itr);
+
+            if (playerPtr) {
                 m_map[playerPos.z + z][playerPos.y + y][playerPos.x + x].push_back(*itr);
                 m_map[playerPos.z][playerPos.y][playerPos.x].erase(itr);
+                playerPos.x = x;
+                playerPos.y = y;
+                playerPos.z = z;
+                return true;
             }
         }
-        return true;
     }
     return false;
 }

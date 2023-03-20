@@ -52,7 +52,7 @@ Entity::Entity() {
 
 }
 
-Entity::Entity(char texture, Colors fg, Colors bg, bool isPassable, bool isVisable, float health, float mana, float strength, float dexterity, float stamina) {
+Entity::Entity(std::string texture, Colors fg, Colors bg, bool isPassable, bool isVisable, float health, float mana, float strength, float dexterity, float stamina) {
     
     this->sprite.texture = texture;
     this->sprite.fg = fg;
@@ -71,10 +71,12 @@ Entity::Entity(char texture, Colors fg, Colors bg, bool isPassable, bool isVisab
         this->stats->dexterity = dexterity;
         this->stats->stamina = stamina;
         this->stats->maxStamina = stamina;
+        this->stats->maxStrength = strength;
+        this->stats->maxDexterity = dexterity;
     }
 }
 
-Entity::Entity(char texture, Status * stats, Colors fg, Colors bg, bool isPassable, bool isVisable) {
+Entity::Entity(std::string texture, Status * stats, Colors fg, Colors bg, bool isPassable, bool isVisable) {
     this->sprite.texture = texture;
     this->sprite.fg = fg;
     this-> sprite.bg = bg;
@@ -83,6 +85,24 @@ Entity::Entity(char texture, Status * stats, Colors fg, Colors bg, bool isPassab
     this->stats = stats;
 }
 
+Entity::Entity(Entity &e) {
+    this->sprite = e.sprite;
+    this->isPassable = e.isPassable;
+    this->isVisable = e.isVisable;
+    this->stats = new Status;
+    if (e.stats != nullptr){
+        this->stats->health = e.stats->health;
+        this->stats->mana = e.stats->mana;
+        this->stats->stamina = e.stats->stamina;
+        this->stats->strength = e.stats->strength;
+        this->stats->dexterity = e.stats->dexterity;
+        this->stats->maxHealth = e.stats->maxHealth;
+        this->stats->maxMana = e.stats->maxMana;
+        this->stats->maxStamina = e.stats->maxStamina;
+        this->stats->maxStrength = e.stats->maxStrength;
+        this->stats->maxDexterity = e.stats->maxDexterity;
+    }
+}
 
 Entity::~Entity() {
 
@@ -160,7 +180,7 @@ void Entity::SetMaxHealth(float health) {
     if (stats == nullptr)
         return ;
     if (health < 1)
-        stats->maxHealth = 1;
+        health = 1;
     else
         stats->maxHealth = health;
 }
@@ -169,18 +189,36 @@ void Entity::SetMaxMana(float mana) {
     if (stats == nullptr)
         return ;
     if (mana < 0)
-        stats->maxMana = 0;
+        mana = 0;
     else
         stats->maxMana = mana;
 }
 
-void Entity::setMaxStamina(float stamina) {
+void Entity::SetMaxStamina(float stamina) {
     if (stats == nullptr)
         return ;
     if (stamina < 0)
-        stats->stamina = 0;
+        stamina = 0;
     else
         stats->stamina = stamina;
+}
+
+void Entity::SetMaxStrength(float strength) {
+    if (stats == nullptr)
+        return;
+    if(strength < 0)
+        strength = 0;
+    else
+        stats->strength = strength;
+}
+
+void Entity::SetMaxDexterity(float dexterity) {
+    if(stats == nullptr)
+        return;
+    if(dexterity < 0)
+        dexterity = 0;
+    else
+        stats->maxDexterity = dexterity;
 }
 
 
@@ -211,7 +249,7 @@ const std::string Entity::GetBg() {
     return GetColor(false, this->sprite);
 }
 
-const char Entity::GetTexture() {
+const std::string Entity::GetTexture() {
     return sprite.texture;
 }
 
@@ -298,8 +336,25 @@ void Entity::ChangeMaxStamina(float stamina) {
     if (stats == nullptr)
         return;
     if (stats->maxStamina + stamina < 0)
-        stats->maxStamina = 0;
+        stamina = 0;
     else
         stats->maxStamina += stamina;
 }
 
+void Entity::ChangeMaxStrength(float strength) {
+    if (stats == nullptr)
+        return;
+    if (stats->maxStrength + strength < 0)
+        stats->maxStrength = 0;
+    else
+        stats->maxStrength += strength;
+}
+
+void Entity::ChangeMaxDexterity(float dexterity) {
+    if (stats == nullptr)
+        return;
+    if (stats->maxDexterity + dexterity < 0)
+        stats->maxDexterity = 0;
+    else
+        stats->maxDexterity += dexterity;
+}

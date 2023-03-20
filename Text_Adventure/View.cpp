@@ -38,7 +38,7 @@ void View::Render(Map* map) {
     std::string renderBuffer = "";
     std::string borderfg = Entity::GetColor(true, m_border);
     std::string borderbg = Entity::GetColor(false, m_border);
-    std::string borderString(1,m_border.texture);
+    std::string borderString = m_border.texture;
 
     for (int y = -1; y <= adjusted_height; y++) {
         std::string borderBuffer = borderfg + borderbg;
@@ -68,11 +68,11 @@ void View::Render(Map* map) {
             }
             else {
                 // adding foreground color to entity
-                renderBuffer += map->at(z_position).at(targetypos).at(targetxpos).back().GetFg();
+                renderBuffer += map->at(z_position).at(targetypos).at(targetxpos).back()->GetFg();
                 // adding background color to entity
-                renderBuffer += map->at(z_position).at(targetypos).at(targetxpos).back().GetBg();
+                renderBuffer += map->at(z_position).at(targetypos).at(targetxpos).back()->GetBg();
                 // Adding entity model to renderRow
-                renderBuffer += map->at(z_position).at(targetypos).at(targetxpos).back().GetTexture();
+                renderBuffer += map->at(z_position).at(targetypos).at(targetxpos).back()->GetTexture();
             }
         }
         renderBuffer += "\x1b[0m\n";

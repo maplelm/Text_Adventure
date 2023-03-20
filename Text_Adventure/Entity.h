@@ -6,7 +6,6 @@
 
 struct Status{
     Status(float health = 1, float mana = 0, float stamina = 0, float strength = 0, float dexterity = 0) {
-
         this->health  = health;
         this->maxHealth = health;
         this->mana = mana;
@@ -14,15 +13,19 @@ struct Status{
         this->stamina = stamina;
         this->maxStamina = stamina;
         this->strength = strength;
+        this->maxStrength = strength;
         this->dexterity = dexterity;
-
+        this->maxDexterity = dexterity;
     }
+
     float health;
     float maxHealth;
     float mana;
     float maxMana;
     float strength;
+    float maxStrength;
     float dexterity;
+    float maxDexterity;
     float stamina;
     float maxStamina;
 };
@@ -43,7 +46,7 @@ typedef enum {
 }Colors;
 
 typedef struct {
-    char texture;
+    std::string texture;
     Colors fg;
     Colors bg;
 }Sprite;
@@ -68,9 +71,12 @@ public:
 
 
     Entity();
-    Entity(char texture, Colors fg = Colors::none, Colors bg = Colors::none, bool isPassable = true, bool isVisable = true,
+    Entity(std::string texture, Colors fg = Colors::none, Colors bg = Colors::none, bool isPassable = true, bool isVisable = true,
              float health = -1, float mana = -1, float strength = -1, float dexterity = -1, float stamina = -1);
-    Entity(char texture, Status * stats, Colors fg = Colors::none, Colors bg = Colors::none, bool isPassable = true, bool isVisable = true);
+    Entity(std::string texture, Status * stats, Colors fg = Colors::none, Colors bg = Colors::none, bool isPassable = true, bool isVisable = true);
+    Entity(Entity &e);
+    
+
     virtual ~Entity();
 
     //Setter functions
@@ -87,7 +93,9 @@ public:
     void SetBackground(Colors color);
     void SetMaxHealth(float health);
     void SetMaxMana(float mana);
-    void setMaxStamina(float stamina);
+    void SetMaxStamina(float stamina);
+    void SetMaxStrength(float strength);
+    void SetMaxDexterity(float dexterity);
 
     //Getter functions
     const Sprite GetSprite();
@@ -96,7 +104,7 @@ public:
     const Status* GetStats();
     const std::string GetFg();
     const std::string GetBg();
-    const char GetTexture();
+    const std::string GetTexture();
 
     void TogglePassable();
     void ToggleVisable();
@@ -110,6 +118,8 @@ public:
     void ChangeMaxHealth(float health);
     void ChangeMaxMana(float mana);
     void ChangeMaxStamina(float stamina);
+    void ChangeMaxStrength(float strength);
+    void ChangeMaxDexterity(float dexterity);
 };
 
 #endif

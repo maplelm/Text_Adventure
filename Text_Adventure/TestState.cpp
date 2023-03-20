@@ -15,8 +15,6 @@ TestState::TestState(unsigned int height, unsigned int width, unsigned int depth
 	AIR_ENTITY;
 	GRASS_ENTITY;
 	DIRT_ENTITY;
-	Entity silt('#', nullptr, Colors::silver, Colors::brown, false, true);
-	Entity tree('T', nullptr, Colors::green, Colors::brown, false, true);
 
     // GENERATING THE MAP //
 	InitMap(width, height, depth);
@@ -25,26 +23,26 @@ TestState::TestState(unsigned int height, unsigned int width, unsigned int depth
 		for (unsigned int y = 0; y < m_map[z].size(); y++) {
 			for (unsigned int x = 0; x < m_map[z][y].size(); x++) {
 				if (z < m_groundLevel) {
-					m_map[z][y][x].push_back(air);
+					m_map[z][y][x].push_back(new AIR_ENTITY);
 				}
 				else if (z == m_groundLevel) {
 					if ((float)std::rand() / (float)RAND_MAX > treeGrassRatio)
-						m_map[z][y][x].push_back(grass);
+						m_map[z][y][x].push_back(new GRASS_ENTITY);
 					else
-						m_map[z][y][x].push_back(tree);
+						m_map[z][y][x].push_back(new TREE_ENTITY);
 				}
 				else {
 					if ((float)std::rand() / (float)RAND_MAX > 0.5f)
-						m_map[z][y][x].push_back(dirt);
+						m_map[z][y][x].push_back(new DIRT_ENTITY);
 					else
-						m_map[z][y][x].push_back(silt);
+						m_map[z][y][x].push_back(new SILT_ENTITY);
 				}
 			}
 		}
 	}
     
 	//Using Celluar Automata on trees
-	CellAuto2d(tree, grass, m_groundLevel, 2);
+	CellAuto2d(new TREE_ENTITY, new GRASS_ENTITY, m_groundLevel, 2);
 
 
     bool playerPlaced = false;
@@ -56,14 +54,14 @@ TestState::TestState(unsigned int height, unsigned int width, unsigned int depth
         
         bool canPass = true;
         for (auto eachEntity : m_map[m_groundLevel][yPlayerStart][xPlayerStart]) {
-            if (!eachEntity.GetisPassable()) {
+            if (!eachEntity->GetisPassable()) {
                 canPass = false; 
                 break;
             }
         }
         if (!canPass)
             continue;
-        Player newPlayer(&m_map[m_groundLevel], '@', Colors::white, Colors::black);
+        Player * newPlayer = new Player('@', Colors::white, Colors::black);
 		m_map[m_groundLevel][yPlayerStart][xPlayerStart].push_back(newPlayer);
 		playerPos.x = xPlayerStart;
 		playerPos.y = yPlayerStart;
@@ -95,16 +93,14 @@ void TestState::Update() {
 			m_camera.Move(0, -1);
     }
 	if (input == 's') {
-		m_camera.Move(0, 1);
-        //m_camera.MoveWindow(0,1);
+        if (MovePlayer(0,1))
+		    m_camera.Move(0, 1);
     }
 	if (input == 'a') {
 		m_camera.Move(-1, 0);
-        //m_camera.MoveWindow(-1,0);
     }
 	if (input == 'd') {
 		m_camera.Move(1, 0);
-        //m_camera.MoveWindow(1,0);
     }
     if (input == 'W')
         m_camera.MoveWindow(0,-1);

@@ -7,6 +7,7 @@
 #include <vector>
 #include <stack>
 #include <fstream>
+#include <cmath>
 
 
 typedef std::vector<std::vector<std::vector<std::vector<Entity*>>>> Map;
