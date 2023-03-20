@@ -77,6 +77,32 @@ std::vector<std::vector<std::vector<Entity>>> * Player::GetCurrentLayer() {
     return this->m_currentLayer;
 }
 
-void Player::MovePlayer(int x, int y) {
-    
+bool Player::MovePlayer(int x, int y) {
+    if (x + this->x_Position < 0)
+        x = 0;
+    else if (x + this->x_Position >= this->m_currentLayer->back().size())
+        x = 0;
+    if (y + this->y_Position < 0)
+        y = 0;
+    else if (y + this->y_Position >= this->m_currentLayer->size())
+        y = 0;
+
+    this->x_Position += x;
+    this->y_Position += y;
+    if (!this->m_currentLayer->back().back().back().GetisPassable()) {
+        this->x_Position -= x;
+        this->y_Position -= y;
+    } 
+    else {
+        this->m_currentLayer->at(this->y_Position).at(this->x_Position).push_back(this->m_currentLayer->at(this->y_Position - y).at(this->x_Position).back());
+        this->m_currentLayer->at(this->y_Position - y).at(this->x_Position - x).pop_back();
+        if (this->m_attachedCamera != nullptr)
+            this->m_attachedCamera->Move(x, y);
+    }
+
+    if (x == 0 && y == 0)
+        return false;
+    else
+        return true;
+
 }

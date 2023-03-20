@@ -64,13 +64,20 @@ TestState::TestState(unsigned int height, unsigned int width, unsigned int depth
         if (!canPass)
             continue;
         Player newPlayer(&m_map[m_groundLevel], '@', Colors::white, Colors::black);
-        m_map[m_groundLevel][yPlayerStart][xPlayerStart].push_back(newPlayer);
-        m_camera.SetyPosition(yPlayerStart - 10);
-        m_camera.SetxPosition(xPlayerStart - 10);
+		m_map[m_groundLevel][yPlayerStart][xPlayerStart].push_back(newPlayer);
+		playerPos.x = xPlayerStart;
+		playerPos.y = yPlayerStart;
+		playerPos.z = m_groundLevel;
+        
+        m_camera.SetyPosition(yPlayerStart - std::floor((float) VIEW_HEIGHT / 2.f));
+        m_camera.SetxPosition(xPlayerStart - std::floor((float) VIEW_WIDTH / 2.f));
 
         playerPlaced = true;
 
     }
+
+	// Setting Main Camera to wanted position
+	m_camera.MoveWindow(30, 10);
 }
 
 TestState::~TestState() {
@@ -84,29 +91,29 @@ void TestState::Update() {
 	if (input == 'c')
 		m_isRunning = false;
 	if (input == 'w') {
-		m_camera.Move(0, -1);
-        m_camera.MoveWindow(0,-1);
+		if (MovePlayer(0, -1))
+			m_camera.Move(0, -1);
     }
 	if (input == 's') {
 		m_camera.Move(0, 1);
-        m_camera.MoveWindow(0,1);
+        //m_camera.MoveWindow(0,1);
     }
 	if (input == 'a') {
 		m_camera.Move(-1, 0);
-        m_camera.MoveWindow(-1,0);
+        //m_camera.MoveWindow(-1,0);
     }
 	if (input == 'd') {
 		m_camera.Move(1, 0);
-        m_camera.MoveWindow(1,0);
+        //m_camera.MoveWindow(1,0);
     }
     if (input == 'W')
-        m_camera.Move(0,-1);
+        m_camera.MoveWindow(0,-1);
     if (input == 'S')
-        m_camera.Move(0,1);
+        m_camera.MoveWindow(0,1);
     if (input == 'A')
-        m_camera.Move(-1,0);
+        m_camera.MoveWindow(-1,0);
     if (input == 'D')
-        m_camera.Move(1,0);
+        m_camera.MoveWindow(1,0);
 	if (input == 'q')
 		m_camera.Move(0, 0, 1);
 	if (input == 'e')

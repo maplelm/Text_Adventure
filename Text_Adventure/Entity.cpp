@@ -1,7 +1,7 @@
 #include "Entity.h"
 
 // Private Functions
-std::string Entity::GetColor(bool isForeground) {
+std::string Entity::GetColor(bool isForeground, Sprite sprite) {
     std::string base = "\x1b[";
     std::string advBaseFg = "\x1b[38;5;";
     std::string advBaseBg = "\x1b[48;5;";
@@ -204,11 +204,11 @@ const Status* Entity::GetStats() {
 }
 
 const std::string Entity::GetFg() {
-    return GetColor(true);
+    return GetColor(true, this->sprite);
 }
 
 const std::string Entity::GetBg() {
-    return GetColor(false);
+    return GetColor(false, this->sprite);
 }
 
 const char Entity::GetTexture() {

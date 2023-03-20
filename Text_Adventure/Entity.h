@@ -42,18 +42,17 @@ typedef enum {
     none,
 }Colors;
 
-typedef enum {
-    player = 0,
-    terrain,
-    item,
-    npc,
-}Type;
-
 typedef struct {
     char texture;
     Colors fg;
     Colors bg;
 }Sprite;
+
+typedef struct {
+    int x;
+    int y;
+    int z;
+}Position;
 
 class Entity {
 
@@ -63,13 +62,10 @@ protected:
     Status* stats;
     Sprite sprite;
 
-    std::string GetColor(bool isForeground);
-
 public:
 
-    /* TEST CODE */
-    Type type = Type::terrain;
-    /************************************/
+    static std::string GetColor(bool isForeground, Sprite sprite);
+
 
     Entity();
     Entity(char texture, Colors fg = Colors::none, Colors bg = Colors::none, bool isPassable = true, bool isVisable = true,

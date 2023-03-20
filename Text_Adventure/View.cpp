@@ -7,52 +7,78 @@ View::View() {
 
     xWinPos = 1;
     yWinPos = 1;
+
+    m_border.texture = '#';
+    m_border.fg = Colors::black;
+    m_border.bg = Colors::gold;
+
 }
 
 View::~View() {
 
 }
 
-void View::Render(Map * map) {
+void View::Render(Map* map) {
 
+    // Checking for valid deepth value and fixing if invalid
     int maxDepth = (int)map->size() - 1;
-    
-
-    
-
     if (z_position > maxDepth)
         z_position = maxDepth;
     else if (z_position < 0)
         z_position = 0;
 
-    std::string renderRow = "";
-    for (int y = 0; y < VIEW_HEIGHT * zoom  ; y++) {
-        for (int x = 0; x < VIEW_WIDTH * zoom; x++) {
+    //getting view size adjusted for zoom value
+    int adjusted_height = std::floor(VIEW_HEIGHT * zoom);
+    int adjusted_width = std::floor(VIEW_WIDTH * zoom);
+
+    //////////////////////////
+    // Render Camera Border //
+    //////////////////////////
+
+    std::string renderBuffer = "";
+    std::string borderfg = Entity::GetColor(true, m_border);
+    std::string borderbg = Entity::GetColor(false, m_border);
+    std::string borderString(1,m_border.texture);
+
+    for (int y = -1; y <= adjusted_height; y++) {
+        std::string borderBuffer = borderfg + borderbg;
+        if (y == -1 || y == adjusted_height) {
+            for (int x = -1; x <= adjusted_width; x++)
+                borderBuffer += m_border.texture;
+            Consoles::DrawToScreen(xWinPos - 1, yWinPos + y, borderBuffer);
+        }
+        else {
+            Consoles::DrawToScreen(xWinPos - 1, yWinPos + y, borderString);
+            Consoles::DrawToScreen(xWinPos + adjusted_width, yWinPos + y, borderString);
+        }
+    }
+
+    /////////////////////////
+    // Render Camera Image //
+    /////////////////////////
+    for (int y = 0; y < adjusted_height; y++) {
+        for (int x = 0; x < adjusted_width ; x++) {
 
             int targetypos = y + y_position;
             int targetxpos = x + x_position;
             
             if (targetypos >= map->at(z_position).size() || targetypos < 0
                 || targetxpos >= map->at(z_position).at(targetypos).size() || targetxpos < 0) {
-                renderRow += "\x1b[0m ";
+                renderBuffer += "\x1b[0m ";
             }
             else {
                 // adding foreground color to entity
-                renderRow += map->at(z_position).at(targetypos).at(targetxpos).back().GetFg();
+                renderBuffer += map->at(z_position).at(targetypos).at(targetxpos).back().GetFg();
                 // adding background color to entity
-                renderRow += map->at(z_position).at(targetypos).at(x + x_position).back().GetBg();
+                renderBuffer += map->at(z_position).at(targetypos).at(targetxpos).back().GetBg();
                 // Adding entity model to renderRow
-                renderRow += map->at(z_position).at(targetypos).at(x + x_position).back().GetTexture();
+                renderBuffer += map->at(z_position).at(targetypos).at(targetxpos).back().GetTexture();
             }
         }
-        renderRow += "\x1b[0m\n";
-        Consoles::DrawToScreen(xWinPos, yWinPos + y, renderRow);
-        renderRow = "";
+        renderBuffer += "\x1b[0m\n";
+        Consoles::DrawToScreen(xWinPos, yWinPos + y, renderBuffer);
+        renderBuffer = "";
     }
-    //std::cout << "\x1b[?1049l";
-    //std::cout << renderRow;
-    //std::cout << "\x1b[?1049h";
-
 }
 
 
@@ -105,8 +131,8 @@ void View::Move(int x, int y, int z) {
 
 void View::MoveWindow(int x, int y) {
 
-    if (xWinPos + x >= 0) 
+    if (xWinPos + x >= 1) 
         xWinPos += x;
-    if (yWinPos + y >= 0)
+    if (yWinPos + y >= 1)
         yWinPos += y;
 }

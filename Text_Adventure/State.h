@@ -12,6 +12,7 @@
 #include <cmath>
 
 #include "Entity.h"
+#include "Player.h"
 #include "View.h" 
 
 class State {
@@ -26,19 +27,18 @@ protected:
     // If false state will shutdown
     bool m_isRunning;
 
-    //Used if state is going to be a chunk in a bigger map
-    unsigned int xPos;
-    unsigned int yPos;
+    //Keep track of player position
+    Position playerPos;
 
     // Keeps track of the ground level of the map, will get rid of this as the map gets more dynamic
     unsigned int m_groundLevel;
 
     //Creates the map structure to specified dimentions (stacks are empty)
     void InitMap(int width, int height, int depth, int groundLevel = 1);
-    void CellAuto2d(Entity target, Entity blank, unsigned int layer, unsigned int r = 1);
+    void CellAuto2d(Entity * target, Entity * blank, unsigned int layer, unsigned int r = 1);
     
     // Not Implemented Yet
-    void CellAuto3d(Entity target, Entity blank, unsigned int CLayer, unsigned int r = 1);
+    void CellAuto3d(Entity * target, Entity * blank, unsigned int CLayer, unsigned int r = 1);
 
 public:
 
@@ -51,7 +51,9 @@ public:
     virtual void Update() = 0;
     virtual void UserInput() = 0;
 
-    void AddEntityToTile(unsigned int x, unsigned int y, unsigned int z, Entity entity);
+    virtual bool MovePlayer(int x, int y, int z = 0);
+
+    void AddEntityToTile(unsigned int x, unsigned int y, unsigned int z, Entity * entity);
 
     const bool IsOpen();
 

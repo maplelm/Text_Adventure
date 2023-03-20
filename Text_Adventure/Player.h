@@ -13,6 +13,9 @@ class Player : public Entity
         View * m_attachedCamera;
         std::vector<std::vector<std::vector<Entity>>> * m_currentLayer;
         unsigned int m_MaxInventorySize;
+        unsigned int x_Position;
+        unsigned int y_Position;
+        unsigned int z_Position;
 
 
     public:
@@ -29,6 +32,7 @@ class Player : public Entity
         void SetAttachedCamera(View * cam);
         void SetMaxInventorySize(unsigned int invSize);
         void SetCurrentLayer (std::vector<std::vector<std::vector<Entity>>>* layer);
+        void SetLocation(int x, int y, int z);
 
         //Getters
         std::vector<Entity>* GetInventory();
@@ -36,6 +40,6 @@ class Player : public Entity
         unsigned int GetInventorySize();
         std::vector<std::vector<std::vector<Entity>>> * GetCurrentLayer();
 
-        void MovePlayer(int x, int y);
+        bool MovePlayer(int x, int y);
 
 };

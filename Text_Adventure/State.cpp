@@ -23,7 +23,16 @@ void State::InitMap(int width, int height, int depth, int groundLevel) {
 }
 
 
-void State::CellAuto2d(Entity target, Entity blank, unsigned int layer, unsigned int r) {
+void State::CellAuto2d(Entity * target, Entity * blank, unsigned int layer, unsigned int r) {
+
+    struct toEdit {
+        int x;
+        int z;
+        int z;
+        char texture;
+    };
+
+    std::vector<toEdit> editList;
 
     if (m_map.size() == 0) {
         return; 
@@ -36,9 +45,9 @@ void State::CellAuto2d(Entity target, Entity blank, unsigned int layer, unsigned
             copyLayer[y][x] = m_map[layer][y][x];
         }
     }
-    copyLayer = m_map[layer];
-    char targetTexture = target.GetTexture();
-    char altTexture = blank.GetTexture();
+    
+    char targetTexture = target->GetTexture();
+    char altTexture = blank->GetTexture();
 
     for (unsigned int rounds = 0; rounds < r; rounds++) {
 
@@ -55,7 +64,7 @@ void State::CellAuto2d(Entity target, Entity blank, unsigned int layer, unsigned
                             xtarget < 0 || xtarget >= m_map[layer][y].size())
                             continue;
 
-                        if (m_map[layer][ytarget][xtarget].back().GetTexture() == targetTexture)
+                        if (m_map[layer][ytarget][xtarget].back()->GetTexture() == targetTexture)
                             neighbors++;
                     }
                 }
@@ -83,12 +92,15 @@ void State::CellAuto3d(Entity target, Entity blank, unsigned int CLayer, unsigne
 
 State::State() {
     m_isRunning = true;
+    m_groundLevel = 1;
 }
 
 State::State(unsigned int height, unsigned int width, unsigned int depth, unsigned int seed) {
     
     //Making sure the state does not shutdown as it starts up
     m_isRunning = true;
+
+    m_groundLevel = 1;
 
     //Init map
     YAxis yLayer;
@@ -114,12 +126,15 @@ State::State(unsigned int height, unsigned int width, unsigned int depth, unsign
             m_map[z].push_back(xLayer);
             for (unsigned int x = 0; x < width; x++) {
                 m_map[z][y].push_back(iListLayer);
-                if (z < 9)
-                    m_map[z][y][x].push_back(air);
-                if (z == 9)
-                    m_map[z][y][x].push_back(grass);
-                if (z > 9)
-                    m_map[z][y][x].push_back(dirt);
+                if (z < m_groundLevel)
+                    // adding air entities
+                    m_map[z][y][x].push_back(new Entity(' ', nullptr, Colors::blue, Colors::blue, true, true));
+                if (z == m_groundLevel)
+                    // adding grass
+                    m_map[z][y][x].push_back(new Entity(' ', nullptr, Colors::black, Colors::green, true, true));
+                if (z > m_groundLevel)
+                    // adding dirt
+                    m_map[z][y][x].push_back(new Entity('#', nullptr, Colors::brown, Colors::brown, false, true));
             }
         }
     }
@@ -135,19 +150,37 @@ void State::Render(bool fullMap) {
         m_camera.Render(&m_map);
         return;
     }
-    /*
-    std::string renderRow = "";
-    for (int i = 0; i < m_map.size(); i++) {
-        for (int j = 0; j < m_map[i].size(); j++) {
-            renderRow += m_map[i][j].GetModel();
-        }
-        renderRow += "\n";
-    }
-    std::cout << renderRow;
-    */
 }
 
-void State::AddEntityToTile(unsigned int x, unsigned int y, unsigned int z, Entity entity) {
+bool State::MovePlayer(int x, int y, int z) {
+
+    // see if movement is valid
+    if (playerPos.x + x < 0 || playerPos.x + x >= m_map[0][0].size())
+        return false;
+    if (playerPos.y + y < 0 || playerPos.y + y >= m_map[0].size())
+        return false;
+    if (playerPos.z + z < 0 || playerPos.z + z >= m_map.size())
+        return false;
+
+    bool passable = true;
+    for (auto each : m_map[playerPos.z + z][playerPos.y + y][playerPos.x  + x])
+        if (!each->GetisPassable())
+            passable = false;
+    if (passable) {
+        for (auto itr = m_map[playerPos.z][playerPos.y][playerPos.x].begin(); itr < m_map[playerPos.z][playerPos.y][playerPos.x].end(); ++itr) {
+            auto id1 = typeid(dynamic_cast<Player*>(*itr)).name();
+            auto id2 = typeid(Player).name();
+            if (typeid(*itr).name() == typeid(Player).name()) {
+                m_map[playerPos.z + z][playerPos.y + y][playerPos.x + x].push_back(*itr);
+                m_map[playerPos.z][playerPos.y][playerPos.x].erase(itr);
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+void State::AddEntityToTile(unsigned int x, unsigned int y, unsigned int z, Entity * entity) {
     if (z >= 0 && y >= 0 && x >= 0 &&
         z < m_map.size() && y < m_map[z].size() && x < m_map[z][y].size()) {
         m_map[z][y][x].push_back(entity);

@@ -9,11 +9,11 @@
 #include <fstream>
 
 
-typedef std::vector<std::vector<std::vector<std::vector<Entity>>>> Map;
+typedef std::vector<std::vector<std::vector<std::vector<Entity*>>>> Map;
 
-typedef std::vector<std::vector<std::vector<Entity>>> YAxis;
-typedef std::vector<std::vector<Entity>> XAxis;
-typedef std::vector<Entity> ItemList;
+typedef std::vector<std::vector<std::vector<Entity*>>> YAxis;
+typedef std::vector<std::vector<Entity*>> XAxis;
+typedef std::vector<Entity*> ItemList;
 
 class View {
 
@@ -23,6 +23,8 @@ class View {
 
     unsigned int xWinPos;
     unsigned int yWinPos;
+
+    Sprite m_border;
 
     float zoom = 1.f;
      
