@@ -23,11 +23,11 @@ void State::InitMap(int width, int height, int depth, int groundLevel) {
 }
 
 
-void State::CellAuto2d(Entity * target, Entity * blank, unsigned int layer, unsigned int r) {
+void State::CellAuto2d(Entity * target, Entity * blank, int layer, int r) {
 
     // Getting the size of the layer so we don't have to call the functions everytime, its a waste of time
-    unsigned int layerHeight = m_map[layer].size();
-    unsigned int layerWidth = m_map[layer][0].size();
+    int layerHeight = (int) m_map[layer].size();
+    int layerWidth = (int) m_map[layer][0].size();
 
     //Exiting if map is empty
     if (m_map.size() == 0) {
@@ -100,7 +100,7 @@ void State::CellAuto2d(Entity * target, Entity * blank, unsigned int layer, unsi
 
 }
 
-void State::CellAuto3d(Entity * target, Entity * blank, unsigned int CLayer, unsigned int r) {
+void State::CellAuto3d(Entity * target, Entity * blank,int CLayer, int r) {
 
 }
 
@@ -143,13 +143,13 @@ State::State(unsigned int height, unsigned int width, unsigned int depth, unsign
                 m_map[z][y].push_back(iListLayer);
                 if (z < m_groundLevel)
                     // adding air entities
-                    m_map[z][y][x].push_back(new AIR_ENTITY);
+                    m_map[z][y][x].push_back(AIR_ENTITY);
                 if (z == m_groundLevel)
                     // adding grass
-                    m_map[z][y][x].push_back(new GRASS_ENTITY);
+                    m_map[z][y][x].push_back(GRASS_ENTITY);
                 if (z > m_groundLevel)
                     // adding dirt
-                    m_map[z][y][x].push_back(new DIRT_ENTITY);
+                    m_map[z][y][x].push_back(DIRT_ENTITY);
             }
         }
     }
@@ -191,9 +191,9 @@ bool State::MovePlayer(int x, int y, int z) {
             if (playerPtr) {
                 m_map[playerPos.z + z][playerPos.y + y][playerPos.x + x].push_back(*itr);
                 m_map[playerPos.z][playerPos.y][playerPos.x].erase(itr);
-                playerPos.x = x;
-                playerPos.y = y;
-                playerPos.z = z;
+                playerPos.x += x;
+                playerPos.y += y;
+                playerPos.z += z;
                 return true;
             }
         }

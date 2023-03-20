@@ -23,34 +23,34 @@ TestState::TestState(unsigned int height, unsigned int width, unsigned int depth
 		for (unsigned int y = 0; y < m_map[z].size(); y++) {
 			for (unsigned int x = 0; x < m_map[z][y].size(); x++) {
 				if (z < m_groundLevel) {
-					m_map[z][y][x].push_back(new AIR_ENTITY);
+					m_map[z][y][x].push_back(AIR_ENTITY);
 				}
 				else if (z == m_groundLevel) {
 					if ((float)std::rand() / (float)RAND_MAX > treeGrassRatio)
-						m_map[z][y][x].push_back(new GRASS_ENTITY);
+						m_map[z][y][x].push_back(GRASS_ENTITY);
 					else
-						m_map[z][y][x].push_back(new TREE_ENTITY);
+						m_map[z][y][x].push_back(TREE_ENTITY);
 				}
 				else {
 					if ((float)std::rand() / (float)RAND_MAX > 0.5f)
-						m_map[z][y][x].push_back(new DIRT_ENTITY);
+						m_map[z][y][x].push_back(DIRT_ENTITY);
 					else
-						m_map[z][y][x].push_back(new SILT_ENTITY);
+						m_map[z][y][x].push_back(SILT_ENTITY);
 				}
 			}
 		}
 	}
     
 	//Using Celluar Automata on trees
-	CellAuto2d(new TREE_ENTITY, new GRASS_ENTITY, m_groundLevel, 2);
+	CellAuto2d(TREE_ENTITY, GRASS_ENTITY, m_groundLevel, 1);
 
 
     bool playerPlaced = false;
     while (!playerPlaced) {
         float ySelect = (float) std::rand() / (float) RAND_MAX;
-        int yPlayerStart = std::floor((m_map[m_groundLevel].size() - 1) * ySelect);
+        int yPlayerStart = (int) std::floor((m_map[m_groundLevel].size() - 1) * ySelect);
         float xSelect = (float) std::rand() / (float) RAND_MAX;
-        int xPlayerStart = std::floor((m_map[m_groundLevel][yPlayerStart].size() - 1) * xSelect);
+        int xPlayerStart = (int) std::floor((m_map[m_groundLevel][yPlayerStart].size() - 1) * xSelect);
         
         bool canPass = true;
         for (auto eachEntity : m_map[m_groundLevel][yPlayerStart][xPlayerStart]) {
@@ -67,8 +67,8 @@ TestState::TestState(unsigned int height, unsigned int width, unsigned int depth
 		playerPos.y = yPlayerStart;
 		playerPos.z = m_groundLevel;
         
-        m_camera.SetyPosition(yPlayerStart - std::floor((float) VIEW_HEIGHT / 2.f));
-        m_camera.SetxPosition(xPlayerStart - std::floor((float) VIEW_WIDTH / 2.f));
+        m_camera.SetyPosition(yPlayerStart - (int) std::floor((float) VIEW_HEIGHT / 2.f));
+        m_camera.SetxPosition(xPlayerStart - (int) std::floor((float) VIEW_WIDTH / 2.f));
 
         playerPlaced = true;
 
@@ -97,10 +97,12 @@ void TestState::Update() {
 		    m_camera.Move(0, 1);
     }
 	if (input == 'a') {
-		m_camera.Move(-1, 0);
+		if (MovePlayer(-1,0))
+			m_camera.Move(-1, 0);
     }
 	if (input == 'd') {
-		m_camera.Move(1, 0);
+		if(MovePlayer(1,0))
+			m_camera.Move(1, 0);
     }
     if (input == 'W')
         m_camera.MoveWindow(0,-1);

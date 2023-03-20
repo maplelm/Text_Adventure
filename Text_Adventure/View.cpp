@@ -28,8 +28,8 @@ void View::Render(Map* map) {
         z_position = 0;
 
     //getting view size adjusted for zoom value
-    int adjusted_height = std::floor(VIEW_HEIGHT * zoom);
-    int adjusted_width = std::floor(VIEW_WIDTH * zoom);
+    int adjusted_height = (int) std::floor(VIEW_HEIGHT * zoom);
+    int adjusted_width = (int) std::floor(VIEW_WIDTH * zoom);
 
     //////////////////////////
     // Render Camera Border //

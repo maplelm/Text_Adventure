@@ -35,10 +35,10 @@ protected:
 
     //Creates the map structure to specified dimentions (stacks are empty)
     void InitMap(int width, int height, int depth, int groundLevel = 1);
-    void CellAuto2d(Entity * target, Entity * blank, unsigned int layer, unsigned int r = 1);
+    void CellAuto2d(Entity * target, Entity * blank, int layer, int r = 1);
     
     // Not Implemented Yet
-    void CellAuto3d(Entity * target, Entity * blank, unsigned int CLayer, unsigned int r = 1);
+    void CellAuto3d(Entity * target, Entity * blank, int CLayer, int r = 1);
 
 public:
 
