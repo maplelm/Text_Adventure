@@ -25,51 +25,48 @@ void State::InitMap(int width, int height, int depth, int groundLevel) {
 
 void State::CellAuto2d(Entity * target, Entity * blank, int layer, int r) {
 
-    // Getting the size of the layer so we don't have to call the functions everytime, its a waste of time
-    int layerHeight = (int) m_map[layer].size();
-    int layerWidth = (int) m_map[layer][0].size();
-
-    //Exiting if map is empty
+    //Do not run if given map is empty!
     if (m_map.size() == 0) {
-        return; 
+        return;
     }
 
-    // Used to store new version of layer while it is being created;
-    std::vector<std::vector<std::vector<int>>> copyLayer;
+    // size of target map layer
+    int mapLayerHeight = (int) m_map[layer].size();
+    int mapLayerWidth = (int) m_map[layer][0].size();
 
-    /////////////////////////////////////////////////////////////
-    // Adjusting copyLayer to be the same size as m_map[layer] //
-    /////////////////////////////////////////////////////////////
-    copyLayer.resize(layerHeight);
-    for (int eachRow = 0; eachRow < layerHeight; eachRow++) {
-        //Sizing row to the same length as it is in the original array
-        copyLayer[eachRow].resize(layerWidth);
-        for (int eachCol = 0; eachCol < layerWidth; eachCol++) {
-            copyLayer[eachRow][eachCol].shrink_to_fit();
-        }
+    // Keeps track of changes to be made to target layer after algorithm runs
+    std::vector<std::vector<std::vector<int>>> changesToMapMatrix;
+
+    
+    /* Adjusting copyLayer to be the same size as m_map[layer] 
+    ************************************************************/
+    changesToMapMatrix.resize(mapLayerHeight);
+    for (int eachRow = 0; eachRow < mapLayerHeight; eachRow++) {
+        //Resize each row to the correct width
+        changesToMapMatrix[eachRow].resize(mapLayerWidth);
     }
-    /////////////////////////////////////////////////////////////////////
+    /*************************************************************/
 
 
     // repeats the process for secified number of times 
     for(int rounds = 0; rounds < r; rounds++) {
 
         //Process each cell in the layer
-        for(int row = 0; row < layerHeight; row++) {
-            for (int col = 0; col < layerWidth; col++) {
+        for(int layerRow = 0; layerRow < mapLayerHeight; layerRow++) {
+            for (int layerCol = 0; layerCol < mapLayerWidth; layerCol++) {
                 
-                // reset the neibhbors value for the next cell
+                //Keeps track of how many neighboring cells have the same entity in it
                 int neighbors = 0;
 
-                //Check neighbors cells for each cell in the layer
+                //Itrating through all neighboring cells
                 for (int localRow = -1; localRow < 2; localRow++ ) {
                     for (int localCol = -1; localCol < 2; localCol++) {
-                        int checkRow = row + localRow;
-                        int checkCol = col + localCol;
+                        int checkRow = layerRow + localRow;
+                        int checkCol = layerCol + localCol;
 
                         // if neighbor does not exist or if neighbor is self skip check
                         if(checkRow < 0 || checkRow >= m_map[layer].size() ||
-                           checkCol < 0 || checkCol >= layerWidth ||
+                           checkCol < 0 || checkCol >= mapLayerWidth ||
                            (localRow == 0 && localCol == 0))
                             continue;
 
@@ -81,37 +78,30 @@ void State::CellAuto2d(Entity * target, Entity * blank, int layer, int r) {
                         }
                     }
                 }
-
-
                 // if less then 2 neibhbors or greater then 4 cell dies
-                if (neighbors <= 1 || neighbors > 4)
-                    copyLayer[row][col].push_back(0);
-                else
-                    copyLayer[row][col].push_back(1);
+                if (neighbors > 1 && neighbors <= 4)
+                    changesToMapMatrix[layerRow][layerCol].push_back(1);
             }
         }
 
         // replacing all layer state with new layer state
         for (int y = 0; y < m_map[layer].size(); y++) {
             for (int x = 0; x < m_map[layer][y].size(); x++) {
-                bool targetFound = false;
                 for (auto itr = m_map[layer][y][x].begin(); itr != m_map[layer][y][x].end(); itr++) {
                     if ((*itr)->GetId() == target->GetId()) {
-                        if (copyLayer[y][x].back() == 0) {
+                        if (changesToMapMatrix[y][x].empty()) {
                             delete *itr;
                             itr = m_map[layer][y][x].erase(itr);
                             itr = m_map[layer][y][x].insert(itr, new Entity(*blank));
                         }
                     }
                     else if ((*itr)->GetId() == blank->GetId()) {
-                        if (copyLayer[y][x].back() == 1) {
+                        if (!changesToMapMatrix[y][x].empty()) {
                             delete *itr;
                             itr = m_map[layer][y][x].erase(itr);
                             itr = m_map[layer][y][x].insert(itr, new Entity(*target)); 
                         }
                     }
-                    if (itr == m_map[layer][y][x].end())
-                        break;
                 }
             }
         }
@@ -146,11 +136,6 @@ State::State(unsigned int height, unsigned int width, unsigned int depth, unsign
     YAxis yLayer;
     XAxis xLayer;
     ItemList iListLayer;
-    //Entity    air(' ', Colors::blue,  Colors::blue,  true,  true, nullptr);
-    AIR_ENTITY;
-    GRASS_ENTITY;
-    DIRT_ENTITY;
-    
     
     //checking for valid height,width,depth
     if (depth <= 0)
@@ -201,18 +186,12 @@ bool State::MovePlayer(int x, int y, int z) {
         return false;
     if (playerPos.z + z < 0 || playerPos.z + z >= m_map.size())
         return false;
-
-    bool passable = true;
     
     for (auto each : m_map[playerPos.z + z][playerPos.y + y][playerPos.x  + x]) {
-        if (!each->GetisPassable()) {
-            passable = false;
-        }
-    }
-    if (passable) {
+        if (!each->GetisPassable())
+            break;
         for (auto itr = m_map[playerPos.z][playerPos.y][playerPos.x].begin(); itr <= m_map[playerPos.z][playerPos.y][playerPos.x].end(); ++itr) {
-            Player * playerPtr = dynamic_cast<Player*>(*itr);
-
+            Player* playerPtr = dynamic_cast<Player*>(*itr);
             if (playerPtr) {
                 m_map[playerPos.z + z][playerPos.y + y][playerPos.x + x].push_back(*itr);
                 m_map[playerPos.z][playerPos.y][playerPos.x].erase(itr);
