@@ -61,19 +61,25 @@ void View::Render(Map* map) {
 
             int targetypos = y + y_position;
             int targetxpos = x + x_position;
+            std::string tempBuffer = "\x1b[0m ";
             
             if (targetypos >= map->at(z_position).size() || targetypos < 0
                 || targetxpos >= map->at(z_position).at(targetypos).size() || targetxpos < 0) {
-                renderBuffer += "\x1b[0m ";
+                continue;
             }
-            else {
-                // adding foreground color to entity
-                renderBuffer += map->at(z_position).at(targetypos).at(targetxpos).back()->GetFg();
-                // adding background color to entity
-                renderBuffer += map->at(z_position).at(targetypos).at(targetxpos).back()->GetBg();
-                // Adding entity model to renderRow
-                renderBuffer += map->at(z_position).at(targetypos).at(targetxpos).back()->GetTexture();
+            
+            std::vector<Entity*>* targetList = &map->at(z_position).at(targetypos).at(targetxpos);
+            
+            for (auto each : (*targetList) | std::ranges::views::reverse) {
+                if (each->GetisVisable()) {
+                    tempBuffer = each->GetFg();
+                    tempBuffer += each->GetBg();
+                    tempBuffer += each->GetTexture();
+                    break;
+                }
             }
+            
+            renderBuffer += tempBuffer;
         }
         renderBuffer += "\x1b[0m\n";
         Consoles::DrawToScreen(xWinPos, yWinPos + y, renderBuffer);

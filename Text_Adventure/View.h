@@ -8,6 +8,7 @@
 #include <stack>
 #include <fstream>
 #include <cmath>
+#include <ranges>
 
 
 typedef std::vector<std::vector<std::vector<std::vector<Entity*>>>> Map;

@@ -35,7 +35,7 @@ void State::CellAuto2d(Entity * target, Entity * blank, int layer, int r) {
     }
 
     // Used to store new version of layer while it is being created;
-    YAxis copyLayer;
+    std::vector<std::vector<std::vector<int>>> copyLayer;
 
     /////////////////////////////////////////////////////////////
     // Adjusting copyLayer to be the same size as m_map[layer] //
@@ -73,31 +73,55 @@ void State::CellAuto2d(Entity * target, Entity * blank, int layer, int r) {
                            (localRow == 0 && localCol == 0))
                             continue;
 
-                        if (m_map[layer][checkRow][checkCol].back()->GetTexture() == target->GetTexture())
-                            neighbors++;
+                        for (auto eachEntity : m_map[layer][checkRow][checkCol]) {
+                            if (eachEntity->GetId() == target->GetId()) {
+                                neighbors++;
+                                break;
+                            }
+                        }
                     }
                 }
 
 
                 // if less then 2 neibhbors or greater then 4 cell dies
                 if (neighbors <= 1 || neighbors > 4)
-                    copyLayer[row][col].push_back( new Entity(*blank));
+                    copyLayer[row][col].push_back(0);
                 else
-                    copyLayer[row][col].push_back( new Entity(*target));
+                    copyLayer[row][col].push_back(1);
             }
         }
 
         // replacing all layer state with new layer state
-        m_map[layer].swap(copyLayer);
-
-        // deleting old allocated memory
-        for(int row = 0; row < copyLayer.size(); row++)
-            for (int col = 0; col < copyLayer[row].size(); col++) {
-                delete copyLayer[row][col].back();
-                copyLayer[row][col].pop_back();
+        for (int y = 0; y < m_map[layer].size(); y++) {
+            for (int x = 0; x < m_map[layer][y].size(); x++) {
+                bool targetFound = false;
+                for (auto itr = m_map[layer][y][x].begin(); itr != m_map[layer][y][x].end(); itr++) {
+                    if ((*itr)->GetId() == target->GetId()) {
+                        if (copyLayer[y][x].back() == 0) {
+                            delete *itr;
+                            itr = m_map[layer][y][x].erase(itr);
+                            itr = m_map[layer][y][x].insert(itr, new Entity(*blank));
+                        }
+                    }
+                    else if ((*itr)->GetId() == blank->GetId()) {
+                        if (copyLayer[y][x].back() == 1) {
+                            delete *itr;
+                            itr = m_map[layer][y][x].erase(itr);
+                            itr = m_map[layer][y][x].insert(itr, new Entity(*target)); 
+                        }
+                    }
+                    if (itr == m_map[layer][y][x].end())
+                        break;
+                }
+            }
         }
     }
 
+    //Freeing passed in objects as function expects them to be allocted on the heap from a pointer
+    if (target != nullptr)
+        delete target;
+    if (blank != nullptr)
+        delete blank;
 }
 
 void State::CellAuto3d(Entity * target, Entity * blank,int CLayer, int r) {
@@ -108,13 +132,14 @@ void State::CellAuto3d(Entity * target, Entity * blank,int CLayer, int r) {
 State::State() {
     m_isRunning = true;
     m_groundLevel = 1;
+    playerPos = { 0 };
 }
 
 State::State(unsigned int height, unsigned int width, unsigned int depth, unsigned int seed) {
     
     //Making sure the state does not shutdown as it starts up
     m_isRunning = true;
-
+    playerPos = { 0 };
     m_groundLevel = 1;
 
     //Init map

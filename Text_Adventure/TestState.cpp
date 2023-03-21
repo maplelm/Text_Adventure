@@ -28,8 +28,10 @@ TestState::TestState(unsigned int height, unsigned int width, unsigned int depth
 				else if (z == m_groundLevel) {
 					if ((float)std::rand() / (float)RAND_MAX > treeGrassRatio)
 						m_map[z][y][x].push_back(GRASS_ENTITY);
-					else
+					else {
+						m_map[z][y][x].push_back(GRASS_ENTITY);
 						m_map[z][y][x].push_back(TREE_ENTITY);
+					}
 				}
 				else {
 					if ((float)std::rand() / (float)RAND_MAX > 0.5f)

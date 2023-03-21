@@ -65,15 +65,17 @@ protected:
     Status* stats;
     Sprite sprite;
 
+    unsigned long entityId;
+
 public:
 
     static std::string GetColor(bool isForeground, Sprite sprite);
 
 
     Entity();
-    Entity(std::string texture, Colors fg = Colors::none, Colors bg = Colors::none, bool isPassable = true, bool isVisable = true,
+    Entity(unsigned long id, std::string texture, Colors fg = Colors::none, Colors bg = Colors::none, bool isPassable = true, bool isVisable = true,
              float health = -1, float mana = -1, float strength = -1, float dexterity = -1, float stamina = -1);
-    Entity(std::string texture, Status * stats, Colors fg = Colors::none, Colors bg = Colors::none, bool isPassable = true, bool isVisable = true);
+    Entity(unsigned long id, std::string texture, Status * stats, Colors fg = Colors::none, Colors bg = Colors::none, bool isPassable = true, bool isVisable = true);
     Entity(Entity &e);
     
 
@@ -96,6 +98,7 @@ public:
     void SetMaxStamina(float stamina);
     void SetMaxStrength(float strength);
     void SetMaxDexterity(float dexterity);
+    void SetEntityId(unsigned long id);
 
     //Getter functions
     const Sprite GetSprite();
@@ -105,6 +108,7 @@ public:
     const std::string GetFg();
     const std::string GetBg();
     const std::string GetTexture();
+    const unsigned long GetId();
 
     void TogglePassable();
     void ToggleVisable();

@@ -43,6 +43,7 @@ std::string Entity::GetColor(bool isForeground, Sprite sprite) {
 //Constructors and Destructors
 Entity::Entity() {
 
+    entityId = 0;
     sprite.texture = ' ';
     sprite.fg = Colors::none;
     sprite.bg = Colors::none;
@@ -52,8 +53,9 @@ Entity::Entity() {
 
 }
 
-Entity::Entity(std::string texture, Colors fg, Colors bg, bool isPassable, bool isVisable, float health, float mana, float strength, float dexterity, float stamina) {
+Entity::Entity(unsigned long id, std::string texture, Colors fg, Colors bg, bool isPassable, bool isVisable, float health, float mana, float strength, float dexterity, float stamina) {
     
+    this->entityId = id;
     this->sprite.texture = texture;
     this->sprite.fg = fg;
     this->sprite.bg = bg;
@@ -76,7 +78,9 @@ Entity::Entity(std::string texture, Colors fg, Colors bg, bool isPassable, bool 
     }
 }
 
-Entity::Entity(std::string texture, Status * stats, Colors fg, Colors bg, bool isPassable, bool isVisable) {
+Entity::Entity(unsigned long id, std::string texture, Status* stats, Colors fg, Colors bg, bool isPassable, bool isVisable) {
+    
+    this->entityId = id;
     this->sprite.texture = texture;
     this->sprite.fg = fg;
     this-> sprite.bg = bg;
@@ -86,11 +90,12 @@ Entity::Entity(std::string texture, Status * stats, Colors fg, Colors bg, bool i
 }
 
 Entity::Entity(Entity &e) {
+    this->entityId = e.entityId;
     this->sprite = e.sprite;
     this->isPassable = e.isPassable;
     this->isVisable = e.isVisable;
-    this->stats = new Status;
     if (e.stats != nullptr){
+        this->stats = new Status;
         this->stats->health = e.stats->health;
         this->stats->mana = e.stats->mana;
         this->stats->stamina = e.stats->stamina;
@@ -101,6 +106,9 @@ Entity::Entity(Entity &e) {
         this->stats->maxStamina = e.stats->maxStamina;
         this->stats->maxStrength = e.stats->maxStrength;
         this->stats->maxDexterity = e.stats->maxDexterity;
+    }
+    else {
+        this->stats = nullptr;
     }
 }
 
@@ -221,6 +229,10 @@ void Entity::SetMaxDexterity(float dexterity) {
         stats->maxDexterity = dexterity;
 }
 
+void Entity::SetEntityId(unsigned long id) {
+    this->entityId = id;
+}
+
 
 //Getter fucntions
 const Sprite Entity::GetSprite() {
@@ -251,6 +263,10 @@ const std::string Entity::GetBg() {
 
 const std::string Entity::GetTexture() {
     return sprite.texture;
+}
+
+const unsigned long Entity::GetId() {
+    return entityId;
 }
 
 
