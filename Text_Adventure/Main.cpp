@@ -14,7 +14,6 @@
 * 
 */
 
-
 #include <iostream>
 
 //adding windows.h library when compiling on a windows system
@@ -23,6 +22,9 @@
 #endif
 
 #include "Game.h"
+
+//Global variables
+std::mutex renderMutex;
 
 int main(int argc, char** argv) {
 

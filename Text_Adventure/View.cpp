@@ -12,6 +12,8 @@ View::View() {
     m_border.fg = Colors::black;
     m_border.bg = Colors::gold;
 
+    isClearNeeded = false;
+
 }
 
 View::~View() {
@@ -61,10 +63,11 @@ void View::Render(Map* map) {
 
             int targetypos = y + y_position;
             int targetxpos = x + x_position;
-            std::string tempBuffer = "\x1b[0m ";
+            
             
             if (targetypos >= map->at(z_position).size() || targetypos < 0
                 || targetxpos >= map->at(z_position).at(targetypos).size() || targetxpos < 0) {
+                renderBuffer +="\x1b[0m ";
                 continue;
             }
             
@@ -72,14 +75,12 @@ void View::Render(Map* map) {
             
             for (auto each : (*targetList) | std::ranges::views::reverse) {
                 if (each->GetisVisable()) {
-                    tempBuffer = each->GetFg();
-                    tempBuffer += each->GetBg();
-                    tempBuffer += each->GetTexture();
+                    renderBuffer += each->GetFg();
+                    renderBuffer += each->GetBg();
+                    renderBuffer += each->GetTexture();
                     break;
                 }
             }
-            
-            renderBuffer += tempBuffer;
         }
         renderBuffer += "\x1b[0m\n";
         Consoles::DrawToScreen(xWinPos, yWinPos + y, renderBuffer);
@@ -87,6 +88,9 @@ void View::Render(Map* map) {
     }
 }
 
+void View::Render() {
+
+}
 
 void View::SetxPosition(int x) {
     x_position = x;
@@ -101,8 +105,16 @@ void View::SetzPosition(int z) {
 }
 
 void View::SetZoom(float zoom) {
-    if (zoom > 0)
+    if (zoom > 0) {
         this->zoom = zoom;
+        ClearNeeded();
+    }
+}
+
+void View::SetisClearNeeded(bool isClearNeeded) {
+    renderMutex.lock();
+    this->isClearNeeded = isClearNeeded;
+    renderMutex.unlock();
 }
 
 const int View::GetxPosition() {
@@ -129,6 +141,10 @@ const float View::GetZoom() {
     return zoom;
 }
 
+const bool View::GetisClearNeeded() {
+    return isClearNeeded;
+}
+
 void View::Move(int x, int y, int z) {
     SetxPosition(x_position + x);
     SetyPosition(y_position + y);
@@ -141,4 +157,13 @@ void View::MoveWindow(int x, int y) {
         xWinPos += x;
     if (yWinPos + y >= 1)
         yWinPos += y;
+    ClearNeeded();
+}
+
+void View::ClearNeeded() {
+    if (!isClearNeeded) {
+        renderMutex.lock();
+        isClearNeeded = true;
+        renderMutex.unlock();
+    }
 }

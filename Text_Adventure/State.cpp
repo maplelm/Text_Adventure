@@ -215,3 +215,11 @@ void State::AddEntityToTile(unsigned int x, unsigned int y, unsigned int z, Enti
 const bool State::IsOpen() {
     return m_isRunning;
 }
+
+void State::AudioThread() {
+
+}
+
+View* State::GetCameraHandle() {
+    return &m_camera;
+}

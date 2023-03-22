@@ -9,7 +9,9 @@
 #include <fstream>
 #include <cmath>
 #include <ranges>
+#include <mutex>
 
+extern std::mutex renderMutex;
 
 typedef std::vector<std::vector<std::vector<std::vector<Entity*>>>> Map;
 
@@ -29,6 +31,8 @@ class View {
     Sprite m_border;
 
     float zoom = 1.f;
+
+    bool isClearNeeded;
      
 public:
 
@@ -36,12 +40,14 @@ public:
     virtual ~View();
 
     void Render(Map * map);
+    virtual void Render();
 
     //Setter Functions
     void SetxPosition(int x);
     void SetyPosition(int y);
     void SetzPosition(int z);
     void SetZoom(float zoom);
+    void SetisClearNeeded(bool isClearNeeded);
 
     //Getter Functions
     const int GetxPosition();
@@ -50,9 +56,12 @@ public:
     const unsigned int GetxWindowPos();
     const unsigned int GetyWindowPos();
     const float GetZoom();
+    const bool GetisClearNeeded();
 
     void Move(int x, int y, int z = 0);
-    void MoveWindow(int x, int y); 
+    void MoveWindow(int x, int y);
+
+    void ClearNeeded();
 
 };
 

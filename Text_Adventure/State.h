@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <cmath>
+#include <thread>
 
 #include "Entity.h"
 #include "Player.h"
@@ -51,11 +52,13 @@ public:
     virtual void Update() = 0;
     virtual void UserInput() = 0;
 
-    virtual bool MovePlayer(int x, int y, int z = 0);
+    virtual bool MovePlayer(int x, int y, int  = 0);
 
     void AddEntityToTile(unsigned int x, unsigned int y, unsigned int z, Entity * entity);
 
     const bool IsOpen();
+    virtual void AudioThread();
+    View* GetCameraHandle();
 
 };
 

@@ -15,6 +15,9 @@ public:
 
     void Update() override;
     void UserInput() override;
+
+    void PlacePlayer();
+    void GenerateTerrain(unsigned int seed);
 };
 
 #endif
